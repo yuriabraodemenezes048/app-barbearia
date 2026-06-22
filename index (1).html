@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuri Cortes — Barbearia</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--bg1:#101010;--bg2:#181818;--bg3:#202020;
+  --b1:#252525;--b2:#303030;
+  --t1:#f2f2f2;--t2:#999;--t3:#555;
+  --gold:#D4AF6A;--gold2:#B8924A;--gold3:#6B4C1E;
+  --green:#22c55e;--gbg:rgba(34,197,94,.1);
+  --amber:#f59e0b;--abg:rgba(245,158,11,.1);
+  --red:#ef4444;--rbg:rgba(239,68,68,.1);
+  --blue:#60a5fa;--bbg:rgba(96,165,250,.1);
+  --r6:6px;--r10:10px;--r14:14px;--r20:20px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:inherit;outline:none}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+#sb{width:216px;min-width:216px;display:flex;flex-direction:column;background:var(--bg1);border-right:1px solid var(--b1)}
+#sb-logo{padding:18px 16px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.logo-ic{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-n{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:-.2px}
+.logo-s{font-size:10px;color:var(--t3);margin-top:1px}
+#sb-nav{flex:1;padding:8px 6px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.ng{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding:10px 10px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r6);cursor:pointer;color:var(--t3);font-size:12.5px;transition:all .12s;white-space:nowrap;user-select:none}
+.ni i{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.ni:hover{background:var(--bg2);color:var(--t2)}
+.ni.on{background:var(--gold3);color:var(--gold);font-weight:600}
+.ni.on i{opacity:1}
+.nb{margin-left:auto;background:rgba(212,175,106,.15);color:var(--gold);font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700}
+.nsep{height:1px;background:var(--b1);margin:4px 0}
+#sb-user{padding:12px 12px;border-top:1px solid var(--b1);display:flex;align-items:center;gap:9px}
+.rsel{margin-left:auto;background:var(--bg2);border:1px solid var(--b2);color:var(--t3);font-size:10px;padding:3px 5px;border-radius:var(--r6);cursor:pointer}
+
+/* ── AVATAR ── */
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:11px}
+.av-s{width:26px;height:26px}
+.av-m{width:34px;height:34px;font-size:12px}
+.av-l{width:46px;height:46px;font-size:15px}
+.av-xl{width:64px;height:64px;font-size:20px}
+.c-gold{background:var(--gold3);color:var(--gold)}
+.c-blue{background:rgba(96,165,250,.15);color:var(--blue)}
+.c-green{background:rgba(34,197,94,.15);color:var(--green)}
+.c-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.c-red{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#topbar{height:52px;flex-shrink:0;background:var(--bg1);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+#tb-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
+#content{flex:1;overflow-y:auto;padding:20px}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block;animation:vfade .15s ease}
+@keyframes vfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ── GRID ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.g1{margin-bottom:16px}
+
+/* ── METRIC CARDS ── */
+.mc{background:var(--bg1);border:1px solid var(--b1);border-radius:var(--r14);padding:16px;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold3),transparent);opacity:.6}
+.mc-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.mc-val{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--t1);line-height:1}
+.mc-sub{font-size:11px;color:var(--t3);margin-top:5px}
+.up{color:var(--green)}.dn{color:var(--red)}
+
+/* ── CARD ── */
+.card{background:var(--bg1);border:1px solid var(--b1);border-radius:var(--r14);padding:18px}
+.ct{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.ct svg{width:14px;height:14px;stroke:var(--gold2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-size:9.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;padding:0 10px 8px;border-bottom:1px solid var(--b1);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--b1);vertical-align:middle;color:var(--t2)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg2)}
+td strong{color:var(--t1);font-weight:600}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.bg{background:var(--gbg);color:var(--green)}
+.ba{background:var(--abg);color:var(--amber)}
+.br{background:var(--rbg);color:var(--red)}
+.bb{background:var(--bbg);color:var(--blue)}
+.bx{background:var(--bg3);color:var(--t3)}
+.bgold{background:rgba(212,175,106,.12);color:var(--gold)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:var(--r6);font-size:12.5px;font-weight:600;transition:all .12s;cursor:pointer;white-space:nowrap}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.bp{background:var(--gold);color:#080808;border:none}
+.bp:hover{background:var(--gold2)}
+.bo{background:transparent;color:var(--t2);border:1px solid var(--b2)}
+.bo:hover{background:var(--bg2);color:var(--t1)}
+.bgh{background:transparent;color:var(--t3);border:none;padding:5px 8px;font-size:12px}
+.bgh:hover{color:var(--t1);background:var(--bg2)}
+.bd{background:var(--rbg);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bsm{padding:4px 10px;font-size:11.5px}
+.blg{padding:11px 22px;font-size:14px}
+.bbl{width:100%}
+
+/* ── INPUTS ── */
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.inp{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r6);padding:8px 11px;color:var(--t1);font-size:13px;width:100%;transition:border-color .12s}
+.inp:focus{border-color:var(--gold3)}
+.inp::placeholder{color:var(--t3)}
+select.inp option{background:var(--bg2)}
+
+/* ── TOGGLE ── */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--b1)}
+.trow:last-child{border-bottom:none}
+.tog{width:34px;height:18px;border-radius:9px;background:var(--bg3);border:1px solid var(--b2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0}
+.tog.on{background:var(--gold3);border-color:var(--gold3)}
+.tog::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--t3);top:2px;left:2px;transition:all .2s}
+.tog.on::after{left:18px;background:var(--gold)}
+
+/* ── DOT ── */
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dg{background:var(--green)}.da{background:var(--amber)}.dr{background:var(--red)}
+
+/* ── MODAL ── */
+#mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s}
+#mbg.open{opacity:1;pointer-events:all}
+#mcontent{background:var(--bg1);border:1px solid var(--b2);border-radius:var(--r20);padding:24px;width:440px;max-width:92vw;max-height:85vh;overflow-y:auto;transform:translateY(12px);transition:transform .18s}
+#mbg.open #mcontent{transform:none}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mt{font-size:14px;font-weight:700}
+.mc2{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r6);color:var(--t3);padding:4px 9px;cursor:pointer;font-size:15px;line-height:1}
+.mf{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--b1)}
+
+/* ── TOAST ── */
+#tarea{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r10);padding:10px 15px;font-size:12.5px;color:var(--t1);display:flex;align-items:center;gap:8px;min-width:230px;animation:tin .2s;pointer-events:all}
+@keyframes tin{from{transform:translateX(14px);opacity:0}to{transform:none;opacity:1}}
+.toast.ts{border-left:3px solid var(--green)}.toast.te{border-left:3px solid var(--red)}.toast.ti{border-left:3px solid var(--gold)}
+
+/* ── STEPS ── */
+.sbar{display:flex;margin-bottom:20px;border-radius:var(--r6);overflow:hidden;border:1px solid var(--b1)}
+.sbt{flex:1;padding:8px 4px;text-align:center;font-size:10.5px;font-weight:600;background:var(--bg2);color:var(--t3);cursor:pointer;transition:all .12s;border-right:1px solid var(--b1)}
+.sbt:last-child{border-right:none}
+.sbt.done{background:var(--bg1);color:var(--gold3)}
+.sbt.cur{background:var(--gold3);color:var(--gold)}
+.sp{display:none}.sp.active{display:block}
+
+/* ── PROF SELECT ── */
+.psc{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--b1);border-radius:var(--r10);cursor:pointer;transition:all .12s;background:var(--bg1);margin-bottom:8px}
+.psc:hover{border-color:var(--b2);background:var(--bg2)}
+.psc.sel{border-color:var(--gold3);background:rgba(107,76,30,.1)}
+.psc .pn{font-size:13.5px;font-weight:600;color:var(--t1)}
+.psc .pe{font-size:11px;color:var(--t3);margin-top:1px}
+
+/* ── SVC CARDS ── */
+.sc{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--b1);border-radius:var(--r10);cursor:pointer;transition:all .12s;background:var(--bg1);margin-bottom:7px}
+.sc:hover{border-color:var(--b2);background:var(--bg2)}
+.sc.sel{border-color:var(--gold3);background:rgba(107,76,30,.1)}
+.sn{font-size:13.5px;font-weight:600;color:var(--t1)}
+.sd{font-size:11px;color:var(--t3);margin-top:1px}
+.sp2{font-size:17px;font-weight:800;color:var(--gold);letter-spacing:-.4px}
+
+/* ── SLOTS ── */
+.slotg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.slot{padding:6px 12px;border-radius:var(--r6);border:1px solid var(--b2);font-size:12.5px;cursor:pointer;transition:all .12s;color:var(--t2);background:var(--bg2)}
+.slot:hover:not(.taken){border-color:var(--gold3);color:var(--gold)}
+.slot.taken{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.slot.sl{background:var(--gold3);color:var(--gold);border-color:var(--gold3)}
+
+/* ── PIX ── */
+.pixwrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pixbox{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r14);padding:20px;text-align:center}
+.pixqr{width:144px;height:144px;margin:0 auto 13px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pixamt{font-size:26px;font-weight:900;color:var(--gold);letter-spacing:-.5px}
+.pixkey{display:inline-block;font-size:11px;color:var(--t3);background:var(--bg3);border:1px solid var(--b2);padding:4px 12px;border-radius:20px;font-family:monospace;margin-top:8px}
+.ri{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--b1)}
+.ri:last-child{border-bottom:none;font-weight:700;font-size:14px}
+.ri span:first-child{color:var(--t3)}
+.infogrn{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:var(--r6);padding:10px 12px;font-size:11.5px;color:var(--green);margin-top:12px}
+
+/* ── PROGRESS ── */
+.prog{margin-bottom:10px}
+.ph{display:flex;justify-content:space-between;font-size:11.5px;color:var(--t2);margin-bottom:4px}
+.pt{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.pf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold3),var(--gold2))}
+
+/* ── BAR CHART ── */
+.barchart{display:flex;align-items:flex-end;gap:8px;height:88px;margin-top:6px}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bb2{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--gold2),var(--gold3))}
+.bl{font-size:9.5px;color:var(--t3)}
+.bv{font-size:9px;color:var(--t3)}
+
+/* ── NBAR ── */
+.nbar{background:rgba(212,175,106,.06);border:1px solid rgba(212,175,106,.15);border-radius:var(--r6);padding:9px 12px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gold2);margin-bottom:14px}
+
+@media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.pixwrap{grid-template-columns:1fr}}
+@media(max-width:640px){.g2{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="tarea"></div>
+<div id="mbg"><div id="mcontent"></div></div>
+<div id="app">
+
+<!-- ══ SIDEBAR ══ -->
+<aside id="sb">
+  <div id="sb-logo">
+    <div class="logo-ic">✂</div>
+    <div><div class="logo-n">Yuri Cortes</div><div class="logo-s">Barbearia · Sistema</div></div>
+  </div>
+  <nav id="sb-nav">
+    <div class="ng">Principal</div>
+    <div class="ni on" data-v="dash" onclick="nav('dash',this)">
+      <svg viewBox="0 0 24 24" class="i"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+    </div>
+    <div class="ni" data-v="agenda" onclick="nav('agenda',this)">
+      <svg viewBox="0 0 24 24" class="i"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agendamentos
+      <span class="nb" id="nbadge">0</span>
+    </div>
+    <div class="ni" data-v="novo" onclick="nav('novo',this)">
+      <svg viewBox="0 0 24 24" class="i"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Novo agendamento
+    </div>
+    <div class="nsep"></div>
+    <div class="ng">Gestão</div>
+    <div class="ni" data-v="profs" onclick="nav('profs',this)">
+      <svg viewBox="0 0 24 24" class="i"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Profissionais
+    </div>
+    <div class="ni" data-v="clis" onclick="nav('clis',this)">
+      <svg viewBox="0 0 24 24" class="i"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Clientes (CRM)
+    </div>
+    <div class="ni" data-v="svcs" onclick="nav('svcs',this)">
+      <svg viewBox="0 0 24 24" class="i"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/></svg>Serviços & Preços
+    </div>
+    <div class="nsep"></div>
+    <div class="ng">Financeiro</div>
+    <div class="ni" data-v="fin" onclick="nav('fin',this)">
+      <svg viewBox="0 0 24 24" class="i"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Financeiro
+    </div>
+    <div class="nsep"></div>
+    <div class="ng">Conta</div>
+    <div class="ni" data-v="perfil" onclick="nav('perfil',this)">
+      <svg viewBox="0 0 24 24" class="i"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu perfil
+    </div>
+    <div class="ni" data-v="cfg" onclick="nav('cfg',this)">
+      <svg viewBox="0 0 24 24" class="i"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações
+    </div>
+  </nav>
+  <div id="sb-user">
+    <div class="av av-m c-gold" id="sbAv">YC</div>
+    <div><div style="font-size:12.5px;font-weight:600;color:var(--t1)" id="sbName">Yuri Cortes</div><div style="font-size:10px;color:var(--t3)" id="sbRole">Proprietário</div></div>
+    <select class="rsel" onchange="switchRole(this.value)" title="Perfil">
+      <option value="own">👑</option>
+      <option value="p0">RC</option>
+      <option value="p1">LM</option>
+      <option value="p2">DA</option>
+    </select>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <div id="topbar">
+    <div id="tb-title">Dashboard</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn bo bsm" onclick="nav('novo',document.querySelector('[data-v=novo]'))">＋ Novo agendamento</button>
+    </div>
+  </div>
+  <div id="content">
+
+  <!-- ══════ DASHBOARD ══════ -->
+  <div class="view active" id="v-dash">
+    <div class="nbar" id="dBar">📅 Carregando...</div>
+    <div class="g4">
+      <div class="mc"><div class="mc-lbl">Agend. hoje</div><div class="mc-val" id="dHoje">0</div><div class="mc-sub" id="dPend">— pendentes</div></div>
+      <div class="mc"><div class="mc-lbl">Faturamento junho</div><div class="mc-val">R$&nbsp;4.820</div><div class="mc-sub"><span class="up">▲12%</span> vs maio</div></div>
+      <div class="mc"><div class="mc-lbl">Clientes cadastrados</div><div class="mc-val" id="dClis">0</div><div class="mc-sub">últimos 30 dias</div></div>
+      <div class="mc"><div class="mc-lbl">Ticket médio</div><div class="mc-val">R$&nbsp;42</div><div class="mc-sub"><span class="up">▲8%</span> este mês</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agendamentos de hoje</div>
+        <div class="tw"><table><thead><tr><th>Hora</th><th>Cliente</th><th>Prof.</th><th>Serviço</th><th>Valor</th><th>Status</th></tr></thead><tbody id="dTbl"></tbody></table></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="ct"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Profissionais hoje</div>
+          <div id="dProfs" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+        <div class="card">
+          <div class="ct"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Serviços populares</div>
+          <div id="dSvcPop"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ AGENDA ══════ -->
+  <div class="view" id="v-agenda">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="display:flex;gap:6px" id="filtProfs"></div>
+      <div style="display:flex;gap:6px;margin-left:auto">
+        <button class="btn bo bsm" id="fBtnPago" onclick="filtS('Pago',this)">✓ Pagos</button>
+        <button class="btn bo bsm" id="fBtnPend" onclick="filtS('Pendente',this)">⏳ Pendentes</button>
+      </div>
+      <button class="btn bp bsm" onclick="nav('novo',document.querySelector('[data-v=novo]'))">＋ Novo</button>
+    </div>
+    <div class="card">
+      <div class="tw"><table><thead><tr><th>Hora</th><th>Cliente</th><th>WhatsApp</th><th>Profissional</th><th>Serviço</th><th>Dur.</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="agTbl"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ══════ NOVO AGEND ══════ -->
+  <div class="view" id="v-novo">
+    <div class="sbar">
+      <div class="sbt cur" id="st1" onclick="goS(1)">1. Profissional</div>
+      <div class="sbt" id="st2" onclick="if(selP!=null)goS(2)">2. Serviço</div>
+      <div class="sbt" id="st3" onclick="if(selSv!=null)goS(3)">3. Horário</div>
+      <div class="sbt" id="st4" onclick="if(selSl)goS(4)">4. Seus dados</div>
+      <div class="sbt" id="st5" onclick="if(cNome)goS(5)">5. Pagamento</div>
+    </div>
+    <div class="sp active" id="sp1">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Escolha seu profissional</div>
+        <div id="pGrid"></div>
+        <button class="btn bp" onclick="if(selP!=null)goS(2);else toast('Selecione um profissional','e')">Continuar →</button>
+      </div>
+    </div>
+    <div class="sp" id="sp2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/></svg>Escolha o serviço</div>
+        <div id="svGrid"></div>
+        <div style="display:flex;gap:8px"><button class="btn bo" onclick="goS(1)">← Voltar</button><button class="btn bp" onclick="if(selSv!=null)goS(3);else toast('Selecione um serviço','e')">Continuar →</button></div>
+      </div>
+    </div>
+    <div class="sp" id="sp3">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Data e horário disponível</div>
+        <div class="field" style="max-width:190px"><label>Data</label><input type="date" class="inp" id="novoData"></div>
+        <div style="font-size:11.5px;color:var(--t3);margin-bottom:7px" id="slotSub">Selecione um horário</div>
+        <div class="slotg" id="slotG"></div>
+        <div style="display:flex;gap:8px;margin-top:14px"><button class="btn bo" onclick="goS(2)">← Voltar</button><button class="btn bp" onclick="if(selSl)goS(4);else toast('Selecione um horário','e')">Continuar →</button></div>
+      </div>
+    </div>
+    <div class="sp" id="sp4">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Seus dados</div>
+        <div class="field"><label>Nome completo *</label><input type="text" class="inp" id="iNome" placeholder="João da Silva"></div>
+        <div class="field"><label>WhatsApp *</label><input type="text" class="inp" id="iWhats" placeholder="(48) 9 9999-9999"></div>
+        <div class="field"><label>E-mail (opcional)</label><input type="email" class="inp" id="iEmail" placeholder="joao@email.com"></div>
+        <div style="display:flex;gap:8px"><button class="btn bo" onclick="goS(3)">← Voltar</button><button class="btn bp" onclick="confDados()">Ir para pagamento →</button></div>
+      </div>
+    </div>
+    <div class="sp" id="sp5">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8"/><rect x="14" y="2" width="8" height="8"/><rect x="2" y="14" width="8" height="8"/><rect x="14" y="14" width="4" height="4"/></svg>Pagamento via Pix</div>
+        <div class="pixwrap">
+          <div class="pixbox">
+            <div style="font-size:11px;color:var(--t3);margin-bottom:12px">Escaneie o QR Code</div>
+            <div class="pixqr"><canvas id="qrc" width="136" height="136"></canvas></div>
+            <div class="pixamt" id="pixAmt">R$&nbsp;0,00</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:3px">Chave Pix (CPF)</div>
+            <div class="pixkey" id="pixKeyTxt">08121189950</div>
+            <button class="btn bo bsm bbl" style="margin-top:12px" onclick="copPix()">📋 Copiar chave Pix</button>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:12px">Resumo</div>
+            <div id="resBox">
+              <div class="ri"><span>Profissional</span><span id="rP">—</span></div>
+              <div class="ri"><span>Serviço</span><span id="rSv">—</span></div>
+              <div class="ri"><span>Data</span><span id="rD">—</span></div>
+              <div class="ri"><span>Horário</span><span id="rH">—</span></div>
+              <div class="ri"><span>Cliente</span><span id="rC">—</span></div>
+              <div class="ri"><span>Total</span><span id="rT" style="color:var(--gold)">R$&nbsp;0,00</span></div>
+            </div>
+            <div class="infogrn">🔒 Pagamento seguro via Pix. Chave CPF registrada no nome do proprietário.</div>
+            <button class="btn bp bbl blg" style="margin-top:12px" onclick="confAgend()">✓ Confirmar agendamento</button>
+            <button class="btn bgh bsm bbl" style="margin-top:5px" onclick="goS(4)">← Voltar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PROFISSIONAIS ══════ -->
+  <div class="view" id="v-profs">
+    <div class="g3" id="profCards"></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Grade — <span id="gradeNm">selecione</span></div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:8px">Clique para bloquear / liberar horário</div>
+        <div class="slotg" id="gradeG"></div>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Desempenho — Junho</div>
+        <div id="perfG"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct"><svg viewBox="0 0 24 24"><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Adicionar profissional</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="margin:0;flex:1;min-width:140px"><label>Nome</label><input type="text" class="inp" id="npN" placeholder="Nome completo"></div>
+        <div class="field" style="margin:0;flex:1;min-width:140px"><label>Especialidade</label><input type="text" class="inp" id="npE" placeholder="Ex: Degradê, Barba"></div>
+        <button class="btn bp" onclick="addProf()">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CLIENTES ══════ -->
+  <div class="view" id="v-clis">
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input type="text" class="inp" id="cliQ" placeholder="🔍 Buscar por nome ou WhatsApp..." oninput="renderClis()" style="flex:1">
+      <button class="btn bp" onclick="openNewCli()">+ Novo cliente</button>
+    </div>
+    <div class="card"><div class="tw"><table>
+      <thead><tr><th>Cliente</th><th>WhatsApp</th><th>Visitas</th><th>Último atend.</th><th>Prof. favorito</th><th>Total gasto</th><th>Ações</th></tr></thead>
+      <tbody id="cliTbl"></tbody>
+    </table></div></div>
+  </div>
+
+  <!-- ══════ SERVIÇOS ══════ -->
+  <div class="view" id="v-svcs">
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/></svg>Serviços cadastrados</div>
+        <div class="tw"><table><thead><tr><th>Serviço</th><th>Duração</th><th>Preço</th><th></th></tr></thead><tbody id="svcTbl"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Novo serviço</div>
+        <div class="field"><label>Nome *</label><input type="text" class="inp" id="svN" placeholder="Ex: Corte simples"></div>
+        <div class="field"><label>Duração (minutos)</label><input type="number" class="inp" id="svD" placeholder="30" min="5" max="180"></div>
+        <div class="field"><label>Preço (R$) *</label><input type="number" class="inp" id="svP" placeholder="35.00" step="0.5" min="0"></div>
+        <button class="btn bp bbl" onclick="addSvc()">Salvar serviço</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ FINANCEIRO ══════ -->
+  <div class="view" id="v-fin">
+    <div class="g4">
+      <div class="mc"><div class="mc-lbl">Receita — Junho</div><div class="mc-val">R$&nbsp;4.820</div><div class="mc-sub"><span class="up">▲12%</span> vs maio</div></div>
+      <div class="mc"><div class="mc-lbl">Recebido via Pix</div><div class="mc-val">R$&nbsp;4.420</div><div class="mc-sub">91,7% do total</div></div>
+      <div class="mc"><div class="mc-lbl">Pendente</div><div class="mc-val">R$&nbsp;90</div><div class="mc-sub">2 cobranças</div></div>
+      <div class="mc"><div class="mc-lbl">Ticket médio</div><div class="mc-val">R$&nbsp;42</div><div class="mc-sub"><span class="up">▲8%</span> vs maio</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Comissões — Junho (50%)</div>
+        <div class="tw"><table><thead><tr><th>Profissional</th><th>Atend.</th><th>Faturado</th><th>Comissão</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Rafael Costa</strong></td><td>34</td><td>R$&nbsp;1.960</td><td><strong style="color:var(--gold)">R$&nbsp;980</strong></td></tr>
+          <tr><td><strong>Lucas Mendes</strong></td><td>41</td><td>R$&nbsp;1.845</td><td><strong style="color:var(--gold)">R$&nbsp;922</strong></td></tr>
+          <tr><td><strong>Diego Alves</strong></td><td>28</td><td>R$&nbsp;1.015</td><td><strong style="color:var(--gold)">R$&nbsp;507</strong></td></tr>
+          <tr style="border-top:1px solid var(--b2)"><td><strong>Total</strong></td><td><strong>103</strong></td><td><strong>R$&nbsp;4.820</strong></td><td><strong style="color:var(--gold)">R$&nbsp;2.409</strong></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Faturamento semanal — Junho</div>
+        <div class="barchart">
+          <div class="bc"><div class="bb2" style="height:60%"></div><div class="bl">Sem 1</div><div class="bv">R$1.050</div></div>
+          <div class="bc"><div class="bb2" style="height:73%"></div><div class="bl">Sem 2</div><div class="bv">R$1.260</div></div>
+          <div class="bc"><div class="bb2" style="height:53%"></div><div class="bl">Sem 3</div><div class="bv">R$910</div></div>
+          <div class="bc"><div class="bb2" style="height:93%"></div><div class="bl">Sem 4</div><div class="bv">R$1.600</div></div>
+        </div>
+        <div style="margin-top:9px;font-size:11px;color:var(--t3)">Melhor semana: <strong style="color:var(--gold)">R$&nbsp;1.600</strong> · Meta mensal: <strong style="color:var(--t2)">R$&nbsp;6.000</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Últimas transações Pix</div>
+      <div class="tw"><table><thead><tr><th>Data/Hora</th><th>Cliente</th><th>Serviço</th><th>Prof.</th><th>Valor</th><th>Status</th></tr></thead><tbody id="transTbl"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ══════ PERFIL ══════ -->
+  <div class="view" id="v-perfil">
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil público</div>
+        <div style="text-align:center;margin-bottom:18px">
+          <div class="av av-xl c-gold" style="margin:0 auto 10px" id="perfAv">RC</div>
+          <div style="font-size:15px;font-weight:700" id="perfNmD">Rafael Costa</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">Barbeiro</div>
+        </div>
+        <div class="field"><label>Nome exibido</label><input type="text" class="inp" id="perfNm" value="Rafael Costa"></div>
+        <div class="field"><label>Especialidades</label><input type="text" class="inp" id="perfEsp" placeholder="Ex: Degradê, Corte clássico"></div>
+        <button class="btn bp bbl" onclick="savePerfil()">Salvar perfil</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Disponibilidade semanal</div>
+          <div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Segunda-feira</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Terça-feira</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Quarta-feira</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Quinta-feira</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Sexta-feira</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Sábado</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span style="font-size:12.5px;color:var(--t2)">Domingo</span><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
+            <div class="field" style="margin:0"><label>Início</label><input type="time" class="inp" value="08:00"></div>
+            <div class="field" style="margin:0"><label>Término</label><input type="time" class="inp" value="18:00"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Meu desempenho — Junho</div>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;background:var(--bg2);border-radius:var(--r10);padding:12px"><div style="font-size:9px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em">Atendimentos</div><div style="font-size:22px;font-weight:800">34</div></div>
+            <div style="flex:1;background:var(--bg2);border-radius:var(--r10);padding:12px"><div style="font-size:9px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em">Faturado</div><div style="font-size:18px;font-weight:800;color:var(--gold)">R$1.960</div></div>
+            <div style="flex:1;background:var(--bg2);border-radius:var(--r10);padding:12px"><div style="font-size:9px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em">Comissão</div><div style="font-size:18px;font-weight:800;color:var(--green)">R$980</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CONFIG ══════ -->
+  <div class="view" id="v-cfg">
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8"/><rect x="14" y="2" width="8" height="8"/><rect x="2" y="14" width="8" height="8"/></svg>Pagamento Pix</div>
+        <div class="field"><label>Chave Pix (CPF)</label><input type="text" class="inp" id="cfgPix" value="08121189950"></div>
+        <div class="field"><label>Nome do favorecido</label><input type="text" class="inp" id="cfgNome" value="Yuri Cortes"></div>
+        <div class="infogrn">✓ Chave configurada. Todos os pagamentos direcionados para este CPF.</div>
+        <button class="btn bp bbl" style="margin-top:12px" onclick="saveCfg()">Salvar configurações</button>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Barbearia</div>
+        <div class="field"><label>Nome da barbearia</label><input type="text" class="inp" placeholder="Yuri Cortes Barbearia"></div>
+        <div class="field"><label>Endereço</label><input type="text" class="inp" placeholder="Rua, número — Florianópolis/SC"></div>
+        <div class="field"><label>WhatsApp</label><input type="text" class="inp" placeholder="(48) 9 9999-9999"></div>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notificações</div>
+        <div class="trow"><div><div style="font-size:12.5px;color:var(--t2)">Novo agendamento</div><div style="font-size:10px;color:var(--t3)">Quando cliente agendar</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="trow"><div><div style="font-size:12.5px;color:var(--t2)">Lembrete 1h antes</div><div style="font-size:10px;color:var(--t3)">Para profissional e cliente</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="trow"><div><div style="font-size:12.5px;color:var(--t2)">Confirmação de pagamento</div><div style="font-size:10px;color:var(--t3)">Quando Pix for recebido</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="trow"><div><div style="font-size:12.5px;color:var(--t2)">Relatório diário</div><div style="font-size:10px;color:var(--t3)">Resumo ao fim do dia</div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <div class="card">
+        <div class="ct"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Dados & Backup</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn bo bbl" onclick="exportData()">📥 Exportar dados (JSON)</button>
+          <button class="btn bd bbl" onclick="if(confirm('Apagar TODOS os dados permanentemente?'))clearData()">🗑️ Limpar todos os dados</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+/* ═══════════ DB ═══════════ */
+var DB={
+  profs:[
+    {id:'p1',nome:'Rafael Costa',ini:'RC',espec:'Degradê, Corte clássico',dispon:true,cor:'c-blue',
+     slots:['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00']},
+    {id:'p2',nome:'Lucas Mendes',ini:'LM',espec:'Barba, Corte americano',dispon:true,cor:'c-green',
+     slots:['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30']},
+    {id:'p3',nome:'Diego Alves',ini:'DA',espec:'Coloração, Tratamentos',dispon:true,cor:'c-amber',
+     slots:['09:00','09:30','10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00']}
+  ],
+  svcs:[
+    {id:'s1',nome:'Corte simples',dur:30,preco:35},
+    {id:'s2',nome:'Corte + barba',dur:50,preco:55},
+    {id:'s3',nome:'Corte degradê',dur:40,preco:45},
+    {id:'s4',nome:'Barba',dur:25,preco:30},
+    {id:'s5',nome:'Coloração',dur:90,preco:120},
+    {id:'s6',nome:'Hidratação capilar',dur:45,preco:60}
+  ],
+  clis:[
+    {id:'c1',nome:'Carlos Mendes',whats:'(48) 9 9111-1111',email:'',visits:47,last:'22/06/2026',fav:'Rafael',total:2350},
+    {id:'c2',nome:'João Pereira',whats:'(48) 9 9222-2222',email:'',visits:38,last:'22/06/2026',fav:'Lucas',total:1520},
+    {id:'c3',nome:'Pedro Alves',whats:'(48) 9 9333-3333',email:'',visits:29,last:'22/06/2026',fav:'Diego',total:1015},
+    {id:'c4',nome:'Marcos Lima',whats:'(48) 9 9444-4444',email:'',visits:22,last:'22/06/2026',fav:'Rafael',total:990},
+    {id:'c5',nome:'Felipe Rocha',whats:'(48) 9 9555-5555',email:'',visits:18,last:'22/06/2026',fav:'Lucas',total:810},
+    {id:'c6',nome:'André Silva',whats:'(48) 9 9666-6666',email:'',visits:14,last:'21/06/2026',fav:'Diego',total:420},
+    {id:'c7',nome:'Bruno Costa',whats:'(48) 9 9777-7777',email:'',visits:11,last:'22/06/2026',fav:'Rafael',total:385},
+    {id:'c8',nome:'Ricardo Nunes',whats:'(48) 9 9888-8888',email:'',visits:9,last:'22/06/2026',fav:'Lucas',total:405},
+    {id:'c9',nome:'Thiago Matos',whats:'(48) 9 9000-0000',email:'',visits:6,last:'22/06/2026',fav:'Diego',total:330}
+  ],
+  agends:[
+    {id:'a1',hora:'08:00',cli:'Carlos Mendes',whats:'(48) 9 9111-1111',prof:'Rafael',svc:'Corte + barba',dur:50,valor:55,pago:'Pago',data:'22/06/2026'},
+    {id:'a2',hora:'08:30',cli:'João Pereira',whats:'(48) 9 9222-2222',prof:'Lucas',svc:'Barba',dur:25,valor:30,pago:'Pago',data:'22/06/2026'},
+    {id:'a3',hora:'09:30',cli:'Marcos Lima',whats:'(48) 9 9444-4444',prof:'Rafael',svc:'Corte degradê',dur:40,valor:45,pago:'Pendente',data:'22/06/2026'},
+    {id:'a4',hora:'10:00',cli:'Pedro Alves',whats:'(48) 9 9333-3333',prof:'Diego',svc:'Corte simples',dur:30,valor:35,pago:'Pendente',data:'22/06/2026'},
+    {id:'a5',hora:'10:30',cli:'Felipe Rocha',whats:'(48) 9 9555-5555',prof:'Lucas',svc:'Corte + barba',dur:50,valor:55,pago:'Pago',data:'22/06/2026'},
+    {id:'a6',hora:'11:30',cli:'André Silva',whats:'(48) 9 9666-6666',prof:'Diego',svc:'Barba',dur:25,valor:30,pago:'Pago',data:'22/06/2026'},
+    {id:'a7',hora:'14:00',cli:'Bruno Costa',whats:'(48) 9 9777-7777',prof:'Rafael',svc:'Corte simples',dur:30,valor:35,pago:'Pago',data:'22/06/2026'},
+    {id:'a8',hora:'15:00',cli:'Ricardo Nunes',whats:'(48) 9 9888-8888',prof:'Lucas',svc:'Corte degradê',dur:40,valor:45,pago:'Pago',data:'22/06/2026'},
+    {id:'a9',hora:'16:00',cli:'Thiago Matos',whats:'(48) 9 9000-0000',prof:'Diego',svc:'Corte + barba',dur:50,valor:55,pago:'Confirmado',data:'22/06/2026'}
+  ],
+  pixKey:'08121189950',
+  pixNome:'Yuri Cortes'
+};
+function saveDB(){try{localStorage.setItem('ycDB3',JSON.stringify(DB));}catch(e){}}
+function loadDB(){try{var s=localStorage.getItem('ycDB3');if(s){var d=JSON.parse(s);if(d&&d.profs)DB=d;}}catch(e){}}
+loadDB();
+
+/* ═══════════ NAV ═══════════ */
+var TITLES={dash:'Dashboard',agenda:'Agendamentos',novo:'Novo agendamento',profs:'Profissionais',clis:'Clientes (CRM)',svcs:'Serviços & Preços',fin:'Financeiro',perfil:'Meu perfil',cfg:'Configurações'};
+function nav(v,el){
+  document.querySelectorAll('.view').forEach(function(e){e.classList.remove('active')});
+  document.querySelectorAll('.ni').forEach(function(e){e.classList.remove('on')});
+  var ve=document.getElementById('v-'+v);if(ve)ve.classList.add('active');
+  if(el)el.classList.add('on');
+  else{var ni=document.querySelector('[data-v='+v+']');if(ni)ni.classList.add('on');}
+  document.getElementById('tb-title').textContent=TITLES[v]||v;
+  if(v==='dash')renderDash();
+  if(v==='agenda'){buildFiltBtns();renderAgenda();}
+  if(v==='profs')renderProfs();
+  if(v==='clis')renderClis();
+  if(v==='svcs')renderSvcs();
+  if(v==='fin')renderTrans();
+  if(v==='novo'){resetFlow();renderPGrid();goS(1);}
+}
+
+/* ═══════════ ROLE ═══════════ */
+var ROLES={own:{nome:'Yuri Cortes',role:'Proprietário',ini:'YC'},p0:{nome:'Rafael Costa',role:'Barbeiro',ini:'RC'},p1:{nome:'Lucas Mendes',role:'Barbeiro',ini:'LM'},p2:{nome:'Diego Alves',role:'Barbeiro',ini:'DA'}};
+function switchRole(r){
+  var d=ROLES[r]||ROLES.own;
+  document.getElementById('sbName').textContent=d.nome;
+  document.getElementById('sbRole').textContent=d.role;
+  document.getElementById('sbAv').textContent=d.ini;
+  document.getElementById('perfNm').value=d.nome;
+  document.getElementById('perfNmD').textContent=d.nome;
+  document.getElementById('perfAv').textContent=d.ini;
+  toast('Perfil: '+d.nome,'i');
+}
+
+/* ═══════════ DASHBOARD ═══════════ */
+function renderDash(){
+  document.getElementById('dHoje').textContent=DB.agends.length;
+  document.getElementById('dClis').textContent=DB.clis.length;
+  document.getElementById('nbadge').textContent=DB.agends.length;
+  var pend=DB.agends.filter(function(a){return a.pago==='Pendente'}).length;
+  document.getElementById('dPend').textContent=pend+' pendentes';
+  document.getElementById('dBar').innerHTML='📅 Hoje, 22 Jun 2026 — <strong>'+DB.agends.length+' agendamentos</strong> · '+pend+' aguardando pagamento';
+  // tabela
+  var t=document.getElementById('dTbl');
+  t.innerHTML=DB.agends.slice().sort(function(a,b){return a.hora.localeCompare(b.hora)}).map(function(a){
+    var bc=a.pago==='Pago'?'bg':a.pago==='Pendente'?'ba':a.pago==='Confirmado'?'bb':'bx';
+    var bi=a.pago==='Pago'?'✓':a.pago==='Pendente'?'⏳':a.pago==='Confirmado'?'📋':'';
+    return '<tr><td><strong>'+a.hora+'</strong></td><td>'+a.cli+'</td><td>'+a.prof+'</td><td>'+a.svc+'</td><td><strong style="color:var(--gold)">R$'+a.valor+'</strong></td><td><span class="badge '+bc+'">'+bi+' '+a.pago+'</span></td></tr>';
+  }).join('');
+  // profs
+  var cors=['c-blue','c-green','c-amber'];
+  var st=[{t:'Livre',d:'dg'},{t:'Atendendo',d:'da'},{t:'Livre',d:'dg'}];
+  document.getElementById('dProfs').innerHTML=DB.profs.slice(0,3).map(function(p,i){
+    var cnt=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).length;
+    var val=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).reduce(function(s,x){return s+x.valor},0);
+    return '<div style="display:flex;align-items:center;gap:10px"><div class="av av-m '+cors[i]+'">'+p.ini+'</div><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:var(--t1)">'+p.nome+'</div><div style="font-size:11px;color:var(--t3)">'+cnt+' atend. · R$'+val+'</div></div><div style="display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--t3)"><div class="dot '+st[i].d+'"></div>'+st[i].t+'</div></div>';
+  }).join('');
+  // serviços pop
+  var pop=[{n:'Corte simples',p:38},{n:'Corte + barba',p:29},{n:'Corte degradê',p:21},{n:'Barba',p:12}];
+  document.getElementById('dSvcPop').innerHTML=pop.map(function(s){
+    return '<div class="prog"><div class="ph"><span>'+s.n+'</span><span style="color:var(--gold)">'+s.p+'%</span></div><div class="pt"><div class="pf" style="width:'+s.p+'%"></div></div></div>';
+  }).join('');
+}
+
+/* ═══════════ AGENDA ═══════════ */
+var fP='todos',fS='todos';
+function buildFiltBtns(){
+  var c=document.getElementById('filtProfs');if(!c)return;
+  c.innerHTML='<button class="btn '+(fP==='todos'?'bp':'bo')+' bsm" onclick="filtA('todos',this)">Todos</button>';
+  DB.profs.forEach(function(p){
+    var nm=p.nome.split(' ')[0];
+    c.innerHTML+='<button class="btn '+(fP===nm?'bp':'bo')+' bsm" onclick="filtA(''+nm+'',this)">'+nm+'</button>';
+  });
+}
+function filtA(p,btn){
+  fP=p;document.querySelectorAll('#filtProfs .btn').forEach(function(b){b.className='btn bo bsm'});
+  if(btn)btn.className='btn bp bsm';renderAgenda();
+}
+function filtS(s,btn){
+  if(fS===s){fS='todos';if(btn)btn.className='btn bo bsm';}
+  else{fS=s;document.querySelectorAll('#fBtnPago,#fBtnPend').forEach(function(b){b.className='btn bo bsm'});if(btn)btn.className='btn bp bsm';}
+  renderAgenda();
+}
+function renderAgenda(){
+  var tb=document.getElementById('agTbl');if(!tb)return;
+  var list=DB.agends.filter(function(a){return(fP==='todos'||a.prof===fP)&&(fS==='todos'||a.pago===fS)}).sort(function(a,b){return a.hora.localeCompare(b.hora)});
+  if(!list.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:26px;color:var(--t3)">Nenhum agendamento encontrado</td></tr>';return;}
+  tb.innerHTML=list.map(function(a){
+    var bc=a.pago==='Pago'?'bg':a.pago==='Pendente'?'ba':a.pago==='Confirmado'?'bb':'bx';
+    var bi=a.pago==='Pago'?'✓':a.pago==='Pendente'?'⏳':a.pago==='Confirmado'?'📋':'';
+    var ac=a.pago==='Pendente'?'<button class="btn bo bsm" onclick="enviaPix(''+a.id+'')">📲 Pix</button> <button class="btn bgh bsm" onclick="marcaPago(''+a.id+'')">✓ Pago</button>':'<button class="btn bgh bsm" onclick="marcaPago(''+a.id+'')">✓</button>';
+    ac+=' <button class="btn bgh bsm" style="color:var(--red)" onclick="exclAgend(''+a.id+'')">✕</button>';
+    return '<tr><td><strong>'+a.hora+'</strong></td><td><strong>'+a.cli+'</strong></td><td style="font-size:11px">'+a.whats+'</td><td>'+a.prof+'</td><td>'+a.svc+'</td><td style="color:var(--t3)">'+a.dur+'min</td><td><strong style="color:var(--gold)">R$'+a.valor.toFixed(2).replace('.',',')+'</strong></td><td><span class="badge '+bc+'">'+bi+' '+a.pago+'</span></td><td style="white-space:nowrap">'+ac+'</td></tr>';
+  }).join('');
+}
+function marcaPago(id){var a=DB.agends.find(function(x){return x.id===id});if(a){a.pago='Pago';saveDB();renderAgenda();renderDash();toast('Pago confirmado!','s');}}
+function exclAgend(id){
+  if(!confirm('Excluir agendamento?'))return;
+  DB.agends=DB.agends.filter(function(x){return x.id!==id});
+  saveDB();renderAgenda();renderDash();document.getElementById('nbadge').textContent=DB.agends.length;
+  toast('Agendamento removido','i');
+}
+function enviaPix(id){var a=DB.agends.find(function(x){return x.id===id});if(a)toast('Pix enviado para '+a.cli+' via WhatsApp!','s');}
+
+/* ═══════════ FLOW ═══════════ */
+var selP=null,selSv=null,selSl=null,cNome='',cWhats='';
+function resetFlow(){
+  selP=null;selSv=null;selSl=null;cNome='';cWhats='';
+  var d=new Date(),dd=('0'+d.getDate()).slice(-2),mm=('0'+(d.getMonth()+1)).slice(-2);
+  var el=document.getElementById('novoData');if(el)el.value=d.getFullYear()+'-'+mm+'-'+dd;
+  ['iNome','iWhats','iEmail'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+}
+function goS(n){
+  for(var i=1;i<=5;i++){
+    var p=document.getElementById('sp'+i),b=document.getElementById('st'+i);
+    if(p){p.className='sp'+(i===n?' active':'');}
+    if(b){b.className='sbt';if(i<n)b.className+=' done';if(i===n)b.className+=' cur';}
+  }
+  if(n===3)renderSlots();
+  if(n===5)renderResumo();
+}
+function renderPGrid(){
+  var g=document.getElementById('pGrid');if(!g)return;g.innerHTML='';
+  DB.profs.forEach(function(p,i){
+    var d=document.createElement('div');d.className='psc'+(selP===i?' sel':'');
+    d.innerHTML='<div class="av av-l '+p.cor+'">'+p.ini+'</div><div style="flex:1"><div class="pn">'+p.nome+'</div><div class="pe">'+p.espec+'</div></div><div style="display:flex;align-items:center;gap:4px;font-size:10.5px;color:'+(p.dispon?'var(--green)':'var(--amber)')+'"><div class="dot '+(p.dispon?'dg':'da')+'"></div>'+(p.dispon?'Disponível':'Em atendimento')+'</div>';
+    d.onclick=(function(idx,el){return function(){selP=idx;document.querySelectorAll('.psc').forEach(function(x){x.classList.remove('sel')});el.classList.add('sel');};})(i,d);
+    g.appendChild(d);
+  });
+}
+function renderSvGrid(){
+  var g=document.getElementById('svGrid');if(!g)return;g.innerHTML='';
+  DB.svcs.forEach(function(s,i){
+    var d=document.createElement('div');d.className='sc'+(selSv===i?' sel':'');
+    d.innerHTML='<div><div class="sn">'+s.nome+'</div><div class="sd">~'+s.dur+' min</div></div><div class="sp2">R$'+s.preco.toFixed(2).replace('.',',')+'</div>';
+    d.onclick=(function(idx,el){return function(){selSv=idx;document.querySelectorAll('.sc').forEach(function(x){x.classList.remove('sel')});el.classList.add('sel');};})(i,d);
+    g.appendChild(d);
+  });
+}
+function renderSlots(){
+  var g=document.getElementById('slotG');if(!g)return;g.innerHTML='';
+  if(selP===null){g.innerHTML='<span style="color:var(--t3);font-size:12px">Selecione um profissional primeiro</span>';return;}
+  var p=DB.profs[selP];
+  var occ=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).map(function(a){return a.hora});
+  document.getElementById('slotSub').textContent='Horários de '+p.nome;
+  p.slots.slice().sort().forEach(function(h){
+    var tk=occ.indexOf(h)>=0;
+    var d=document.createElement('div');
+    d.className='slot'+(tk?' taken':'')+(h===selSl?' sl':'');d.textContent=h;
+    if(!tk)d.onclick=(function(hora,el){return function(){selSl=hora;document.querySelectorAll('.slot').forEach(function(x){x.classList.remove('sl')});el.classList.add('sl');};})(h,d);
+    g.appendChild(d);
+  });
+}
+function confDados(){
+  var n=document.getElementById('iNome').value.trim(),w=document.getElementById('iWhats').value.trim();
+  if(!n){toast('Informe seu nome','e');return;}if(!w){toast('Informe o WhatsApp','e');return;}
+  cNome=n;cWhats=w;goS(5);
+}
+function renderResumo(){
+  if(selP===null||selSv===null)return;
+  var p=DB.profs[selP],s=DB.svcs[selSv];
+  var nd=document.getElementById('novoData');
+  var df=nd&&nd.value?nd.value.split('-').reverse().join('/'):'—';
+  document.getElementById('rP').textContent=p.nome;
+  document.getElementById('rSv').textContent=s.nome;
+  document.getElementById('rD').textContent=df;
+  document.getElementById('rH').textContent=selSl||'—';
+  document.getElementById('rC').textContent=cNome;
+  var v='R$ '+s.preco.toFixed(2).replace('.',',');
+  document.getElementById('rT').textContent=v;
+  document.getElementById('pixAmt').textContent=v;
+  document.getElementById('pixKeyTxt').textContent=DB.pixKey||'08121189950';
+  drawQR(s.preco);
+}
+function drawQR(val){
+  var c=document.getElementById('qrc');if(!c)return;
+  var ctx=c.getContext('2d');c.width=136;c.height=136;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,136,136);ctx.fillStyle='#0a0a0a';
+  var sd=Math.round(val*137+42);
+  function rn(){sd=(sd*1664525+1013904223)&0x7fffffff;return sd/0x7fffffff;}
+  for(var y=0;y<136;y+=5)for(var x=0;x<136;x+=5)if(rn()>.5)ctx.fillRect(x,y,5,5);
+  function eye(ex,ey){ctx.fillStyle='#fff';ctx.fillRect(ex,ey,28,28);ctx.fillStyle='#0a0a0a';ctx.fillRect(ex,ey,28,28);ctx.fillStyle='#fff';ctx.fillRect(ex+4,ey+4,20,20);ctx.fillStyle='#0a0a0a';ctx.fillRect(ex+8,ey+8,12,12);}
+  eye(4,4);eye(104,4);eye(4,104);
+}
+function copPix(){
+  var k=DB.pixKey||'08121189950';
+  if(navigator.clipboard)navigator.clipboard.writeText(k).then(function(){toast('Chave Pix copiada!','s')});
+  else toast('Chave: '+k,'i');
+}
+function confAgend(){
+  if(selP===null||selSv===null||!selSl||!cNome){toast('Dados incompletos','e');return;}
+  var p=DB.profs[selP],s=DB.svcs[selSv];
+  var nd=document.getElementById('novoData'),df=nd&&nd.value?nd.value.split('-').reverse().join('/'):'22/06/2026';
+  DB.agends.push({id:'a'+Date.now(),hora:selSl,cli:cNome,whats:cWhats,prof:p.nome.split(' ')[0],svc:s.nome,dur:s.dur,valor:s.preco,pago:'Pendente',data:df});
+  if(!DB.clis.some(function(c){return c.nome===cNome}))DB.clis.push({id:'c'+Date.now(),nome:cNome,whats:cWhats,email:'',visits:1,last:df,fav:p.nome.split(' ')[0],total:s.preco});
+  saveDB();document.getElementById('nbadge').textContent=DB.agends.length;
+  toast('Agendamento confirmado! '+cNome+' às '+selSl,'s');
+  nav('agenda',document.querySelector('[data-v=agenda]'));
+}
+
+/* ═══════════ PROFISSIONAIS ═══════════ */
+function renderProfs(){
+  renderProfCards();if(DB.profs.length)renderGrade(0);renderPerf();
+}
+function renderProfCards(){
+  var g=document.getElementById('profCards');if(!g)return;g.innerHTML='';
+  DB.profs.forEach(function(p,i){
+    var cnt=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).length;
+    var val=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).reduce(function(s,a){return s+a.valor},0);
+    var d=document.createElement('div');d.className='card';
+    d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div class="av av-l '+p.cor+'">'+p.ini+'</div><div><div style="font-size:13.5px;font-weight:700;color:var(--t1)">'+p.nome+'</div><div style="font-size:11px;color:var(--t3)">'+p.espec+'</div></div></div>'+
+      '<div class="trow"><span style="font-size:12.5px;color:var(--t2)">Disponível agora</span><div class="tog'+(p.dispon?' on':'')+'" onclick="togDisp('+i+',this)"></div></div>'+
+      '<div class="trow"><span style="font-size:12.5px;color:var(--t2)">Aceitar agendamentos</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px">'+
+        '<div style="flex:1;background:var(--bg2);border-radius:var(--r10);padding:10px"><div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em">Hoje</div><div style="font-size:20px;font-weight:800">'+cnt+'</div></div>'+
+        '<div style="flex:1;background:var(--bg2);border-radius:var(--r10);padding:10px"><div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em">Valor</div><div style="font-size:16px;font-weight:800;color:var(--gold)">R$'+val+'</div></div></div>'+
+      '<button class="btn bo bsm bbl" style="margin-top:10px" onclick="renderGrade('+i+');document.getElementById('gradeNm').textContent=''+p.nome+''">Grade de horários</button>';
+    g.appendChild(d);
+  });
+}
+function togDisp(i,el){el.classList.toggle('on');DB.profs[i].dispon=el.classList.contains('on');saveDB();}
+function renderGrade(idx){
+  var g=document.getElementById('gradeG');if(!g)return;
+  var p=DB.profs[idx];if(!p)return;
+  document.getElementById('gradeNm').textContent=p.nome;
+  var occ=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).map(function(a){return a.hora});
+  g.innerHTML='';
+  p.slots.slice().sort().forEach(function(h){
+    var tk=occ.indexOf(h)>=0;
+    var d=document.createElement('div');d.className='slot'+(tk?' taken':' sl');d.textContent=h;
+    if(!tk)d.onclick=function(){
+      var on=d.classList.contains('sl');d.className='slot '+(on?'taken':'sl');
+      if(on)p.slots=p.slots.filter(function(x){return x!==h});else p.slots.push(h);
+      saveDB();toast((on?'Bloqueado: ':'Liberado: ')+h,'i');
+    };
+    g.appendChild(d);
+  });
+}
+function renderPerf(){
+  var g=document.getElementById('perfG');if(!g)return;
+  var cors=['c-blue','c-green','c-amber'];
+  g.innerHTML=DB.profs.map(function(p,i){
+    var fat=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).reduce(function(s,a){return s+a.valor},0);
+    var cnt=DB.agends.filter(function(a){return a.prof===p.nome.split(' ')[0]}).length;
+    var pct=Math.min(Math.round(fat/60),100);
+    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="av av-m '+cors[i]+'">'+p.ini+'</div><div style="flex:1">'+
+      '<div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px"><span style="color:var(--t1)">'+p.nome+'</span><span style="color:var(--gold)">R$'+fat+'</span></div>'+
+      '<div class="pt"><div class="pf" style="width:'+pct+'%"></div></div>'+
+      '<div style="font-size:10px;color:var(--t3);margin-top:2px">'+cnt+' atendimentos</div></div></div>';
+  }).join('');
+}
+function addProf(){
+  var n=document.getElementById('npN').value.trim(),e=document.getElementById('npE').value.trim();
+  if(!n){toast('Informe o nome','e');return;}
+  var ini=n.split(' ').slice(0,2).map(function(w){return w[0]}).join('').toUpperCase();
+  var cors=['c-blue','c-green','c-amber','c-red'];
+  DB.profs.push({id:'p'+Date.now(),nome:n,ini:ini,espec:e||'Barbeiro',dispon:true,cor:cors[DB.profs.length%4],
+    slots:['09:00','09:30','10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00']});
+  saveDB();document.getElementById('npN').value='';document.getElementById('npE').value='';
+  renderProfs();toast(n+' adicionado!','s');
+}
+
+/* ═══════════ CLIENTES ═══════════ */
+function renderClis(){
+  var tb=document.getElementById('cliTbl');if(!tb)return;
+  var q=(document.getElementById('cliQ')||{}).value||'';
+  var list=DB.clis.filter(function(c){return !q||c.nome.toLowerCase().includes(q.toLowerCase())||c.whats.includes(q)}).sort(function(a,b){return b.visits-a.visits});
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t3)">Nenhum cliente</td></tr>';return;}
+  var cors=['c-blue','c-green','c-amber','c-red','c-gold'];
+  tb.innerHTML=list.map(function(c,i){
+    var ini=c.nome.split(' ').slice(0,2).map(function(w){return w[0]}).join('').toUpperCase();
+    return '<tr><td><div style="display:flex;align-items:center;gap:7px"><div class="av av-s '+cors[i%5]+'">'+ini+'</div><strong>'+c.nome+'</strong></div></td>'+
+      '<td style="font-size:11px;color:var(--t3)">'+c.whats+'</td>'+
+      '<td><span class="badge bx">'+c.visits+'x</span></td>'+
+      '<td style="font-size:11px;color:var(--t3)">'+c.last+'</td>'+
+      '<td>'+c.fav+'</td>'+
+      '<td><strong style="color:var(--gold)">R$'+c.total.toLocaleString('pt-BR')+'</strong></td>'+
+      '<td><button class="btn bgh bsm" onclick="openCli(''+c.id+'')">Ver</button></td></tr>';
+  }).join('');
+}
+function openNewCli(){
+  openM('<div class="mh"><div class="mt">Novo cliente</div><button class="mc2" onclick="closeM()">×</button></div>'+
+    '<div class="field"><label>Nome *</label><input type="text" class="inp" id="mn"></div>'+
+    '<div class="field"><label>WhatsApp *</label><input type="text" class="inp" id="mw"></div>'+
+    '<div class="field"><label>E-mail</label><input type="email" class="inp" id="me"></div>'+
+    '<div class="mf"><button class="btn bo" onclick="closeM()">Cancelar</button><button class="btn bp" onclick="saveNewCli()">Salvar</button></div>');
+}
+function saveNewCli(){
+  var n=document.getElementById('mn').value.trim(),w=document.getElementById('mw').value.trim();
+  if(!n||!w){toast('Preencha os campos obrigatórios','e');return;}
+  DB.clis.push({id:'c'+Date.now(),nome:n,whats:w,email:(document.getElementById('me')||{}).value||'',visits:0,last:'—',fav:'—',total:0});
+  saveDB();closeM();renderClis();toast(n+' cadastrado!','s');
+}
+function openCli(id){
+  var c=DB.clis.find(function(x){return x.id===id});if(!c)return;
+  var hist=DB.agends.filter(function(a){return a.cli===c.nome});
+  var rows=hist.length?hist.map(function(a){return '<tr><td>'+a.data+'</td><td>'+a.hora+'</td><td>'+a.svc+'</td><td>'+a.prof+'</td><td><strong style="color:var(--gold)">R$'+a.valor+'</strong></td></tr>';}).join(''):'<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--t3)">Sem histórico</td></tr>';
+  var ini=c.nome.split(' ').slice(0,2).map(function(w){return w[0]}).join('').toUpperCase();
+  openM('<div class="mh"><div class="mt">'+c.nome+'</div><button class="mc2" onclick="closeM()">×</button></div>'+
+    '<div style="display:flex;gap:12px;margin-bottom:14px"><div class="av av-l c-blue">'+ini+'</div><div>'+
+    '<div style="font-size:14px;font-weight:700">'+c.nome+'</div><div style="font-size:11px;color:var(--t3)">'+c.whats+'</div>'+
+    '<div style="margin-top:7px;display:flex;gap:6px"><span class="badge bgold">'+c.visits+'x visitas</span><span class="badge bg">R$'+c.total+' gasto</span></div></div></div>'+
+    '<div style="font-size:12.5px;font-weight:700;margin-bottom:7px">Histórico de agendamentos</div>'+
+    '<div class="tw"><table><thead><tr><th>Data</th><th>Hora</th><th>Serviço</th><th>Prof.</th><th>Valor</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="mf"><button class="btn bo" onclick="closeM()">Fechar</button></div>');
+}
+
+/* ═══════════ SERVIÇOS ═══════════ */
+function renderSvcs(){
+  var tb=document.getElementById('svcTbl');if(!tb)return;
+  tb.innerHTML=DB.svcs.map(function(s){
+    return '<tr><td><strong>'+s.nome+'</strong></td><td style="color:var(--t3)">'+s.dur+' min</td>'+
+      '<td><strong style="color:var(--gold)">R$'+s.preco.toFixed(2).replace('.',',')+'</strong></td>'+
+      '<td><button class="btn bgh bsm" style="color:var(--red)" onclick="rmSvc(''+s.id+'')">Remover</button></td></tr>';
+  }).join('');
+}
+function addSvc(){
+  var n=document.getElementById('svN').value.trim(),d=parseInt(document.getElementById('svD').value)||30,p=parseFloat(document.getElementById('svP').value)||0;
+  if(!n||!p){toast('Informe nome e preço','e');return;}
+  DB.svcs.push({id:'s'+Date.now(),nome:n,dur:d,preco:p});
+  saveDB();['svN','svD','svP'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  renderSvcs();renderSvGrid();toast(n+' adicionado!','s');
+}
+function rmSvc(id){
+  if(!confirm('Remover serviço?'))return;
+  DB.svcs=DB.svcs.filter(function(s){return s.id!==id});
+  saveDB();renderSvcs();
+}
+
+/* ═══════════ FINANCEIRO ═══════════ */
+function renderTrans(){
+  var tb=document.getElementById('transTbl');if(!tb)return;
+  tb.innerHTML=DB.agends.slice().sort(function(a,b){return a.hora.localeCompare(b.hora)}).map(function(a){
+    var bc=a.pago==='Pago'?'bg':a.pago==='Pendente'?'ba':'bb';
+    var bi=a.pago==='Pago'?'✓':a.pago==='Pendente'?'⏳':'📋';
+    return '<tr><td>'+a.data+' '+a.hora+'</td><td>'+a.cli+'</td><td>'+a.svc+'</td><td>'+a.prof+'</td>'+
+      '<td><strong style="color:var(--gold)">R$'+a.valor.toFixed(2).replace('.',',')+'</strong></td>'+
+      '<td><span class="badge '+bc+'">'+bi+' '+a.pago+'</span></td></tr>';
+  }).join('');
+}
+
+/* ═══════════ PERFIL / CONFIG ═══════════ */
+function savePerfil(){
+  var n=document.getElementById('perfNm').value.trim();
+  document.getElementById('perfNmD').textContent=n;
+  document.getElementById('perfAv').textContent=n.split(' ').slice(0,2).map(function(w){return w[0]}).join('').toUpperCase();
+  toast('Perfil salvo!','s');
+}
+function saveCfg(){
+  DB.pixKey=(document.getElementById('cfgPix')||{}).value||'08121189950';
+  DB.pixNome=(document.getElementById('cfgNome')||{}).value||'Yuri Cortes';
+  saveDB();toast('Configurações salvas!','s');
+}
+function exportData(){
+  var b=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  var u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='yuri-cortes-backup.json';a.click();URL.revokeObjectURL(u);toast('Exportado!','s');
+}
+function clearData(){localStorage.removeItem('ycDB3');toast('Dados limpos. Recarregando...','i');setTimeout(function(){location.reload()},1300);}
+
+/* ═══════════ MODAL ═══════════ */
+function openM(html){document.getElementById('mcontent').innerHTML=html;document.getElementById('mbg').classList.add('open');}
+function closeM(){document.getElementById('mbg').classList.remove('open');}
+document.getElementById('mbg').addEventListener('click',function(e){if(e.target===this)closeM();});
+
+/* ═══════════ TOAST ═══════════ */
+function toast(msg,t){
+  var a=document.getElementById('tarea'),d=document.createElement('div');
+  d.className='toast t'+(t||'i');
+  d.innerHTML='<span>'+({s:'✅',e:'❌',i:'ℹ️'}[t]||'ℹ️')+'</span><span>'+msg+'</span>';
+  a.appendChild(d);setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},3000);
+}
+
+/* ═══════════ INIT ═══════════ */
+(function(){
+  renderSvGrid();renderDash();
+  document.getElementById('nbadge').textContent=DB.agends.length;
+  var d=new Date(),el=document.getElementById('novoData');
+  if(el)el.value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+})();
+</script>
+</body>
+</html>
